@@ -1,0 +1,143 @@
+/**
+ * 全局样式入口。
+ *
+ * 注意：tailwind.css 在 main.ts 里单独引入（走 PostCSS/Tailwind 管线），
+ * 这里只引入基于 Sass 的主题变量与 Element Plus 覆写，避免 Sass 把 .css 当作普通 CSS @import 原样输出。
+ */
+@use './theme';
+@use './element-override';
+
+/**
+ * 基础重置。
+ * Tailwind 的 preflight 已关闭（避免与 Element Plus 的样式基线冲突），因此这里补最小必要的重置。
+ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/**
+ * 字体栈：西文优先、中文兜底。
+ * 顺序说明：先走系统 UI 字体（macOS 的 SF、Windows 的 Segoe UI Variable / Segoe UI），
+ * 中文字体放在后面，只负责渲染汉字；这样数字与英文是系统最佳字形，中文也不会回退到宋体。
+ * 不再把 'Helvetica Neue' / Arial 放在最前面——它们在 Windows 上缺失或观感陈旧，是"廉价感"的来源之一。
+ */
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text', 'Segoe UI', system-ui,
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', 'Helvetica Neue',
+    Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5715;
+  color: var(--admin-text-primary);
+  background: var(--admin-bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+/* 中文标题不额外加粗到 700，600 在现代后台里已经足够有层级且不笨重 */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--admin-color-primary);
+  text-decoration: none;
+}
+
+/* 表格、分页与统计数字使用等宽数字，避免数字宽度跳动导致列不齐 */
+.el-table,
+.el-pagination,
+.el-descriptions__cell {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 细滚动条：hover 时才明显，减少右侧"工业感" */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--admin-border-color);
+  background-clip: content-box;
+  border: 2px solid transparent;
+  border-radius: var(--admin-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-text-tertiary);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 文本选中色跟随主色，避免系统默认的高饱和蓝 */
+::selection {
+  background: var(--admin-color-primary-light-8);
+  color: var(--admin-text-primary);
+}
+
+/* nprogress 顶部进度条使用主题主色 */
+#nprogress .bar {
+  background: var(--admin-color-primary) !important;
+  height: 2px;
+}
+
+#nprogress .peg {
+  box-shadow:
+    0 0 10px var(--admin-color-primary),
+    0 0 5px var(--admin-color-primary);
+}
+
+/* 通用小工具类（不依赖 Tailwind 的工具类，供少量布局使用） */
+.text-secondary {
+  color: var(--admin-text-secondary);
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gap-8 {
+  gap: 8px;
+}

@@ -1,0 +1,62 @@
+# =============================================================================
+# 公共配置：所有环境共享。环境差异只放在 application-dev.yml / application-prod.yml。
+# 注意：这里不写 server.servlet.context-path，接口地址里已包含 /admin 前缀。
+# =============================================================================
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: admin
+  profiles:
+    # 默认激活 dev
+    active: dev
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 库名固定 admin，host / port / 账号 / 密码全部从环境变量读取并给出本地默认值
+    url: "jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/admin?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&useSSL=false&allowPublicKeyRetrieval=true"
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root@123456}
+    hikari:
+      pool-name: AdminHikariPool
+      minimum-idle: 5
+      maximum-pool-size: 20
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      validation-timeout: 5000
+      connection-test-query: SELECT 1
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      # 密码从环境变量读取，默认空（本地无密码 Redis）
+      password: ${REDIS_PASSWORD:}
+      timeout: 5s
+  mvc:
+    # 找不到处理器时抛异常，交给全局异常处理器返回 100007
+    throw-exception-if-no-handler-found: true
+
+mybatis-plus:
+  # 只配 Mapper 位置、实体包、SQL 日志实现；逻辑删除 / 主键策略 / 表名策略一律在 admin-permission 的 MybatisPlusConfig 里用代码声明
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.ming.admin.**.entity
+
+# 自定义业务配置：统一前缀 admin，绑定到 admin-permission 的 AdminProperties
+admin:
+  token-expire: 2h
+  perm-cache: 30m
+  log-dir: logs
+  slow-request-millis: 1000
+  version: 1.0.0
+  # 启动校验与文档开关：公共档按 dev 取值，prod 覆盖为 false
+  startup-check-enabled: true
+  doc-enabled: true
+  # 审计日志线程池（有界，拒绝时只打 WARN）
+  audit:
+    core-pool-size: 2
+    max-pool-size: 8
+    queue-capacity: 500
+    keep-alive-seconds: 60
+    thread-name-prefix: admin-audit-

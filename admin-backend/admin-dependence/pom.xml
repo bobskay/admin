@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.ming</groupId>
+    <artifactId>admin-dependence</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>admin-dependence</name>
+    <description>版本集中管理：所有第三方依赖版本号只在本模块出现</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <mybatis-plus.version>3.5.7</mybatis-plus.version>
+        <redisson.version>3.34.1</redisson.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <!-- knife4j 4.5.0 是针对 springdoc 2.3.0 编译的：它的 Knife4jOpenApiCustomizer 调用了
+             SpringDocConfigProperties#getGroupConfigs()，该方法在 springdoc 2.6.0 里返回类型由 List 改成了 Set，
+             混用会在打开文档时抛 NoSuchMethodError。springdoc 2.3.0 本身已适配 Spring Framework 6.1
+             （即 Spring Boot 3.2/3.3），因此这里把它显式固定在 2.3.0，与 knife4j 配套。 -->
+        <springdoc.version>2.3.0</springdoc.version>
+        <hutool.version>5.8.34</hutool.version>
+        <lombok.version>1.18.34</lombok.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <bouncycastle.version>1.78.1</bouncycastle.version>
+
+        <admin.version>1.0.0</admin.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- ================= 第三方 ================= -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+            <!-- knife4j 4.5.0 传递的是 springdoc 2.3.0，该版本与 Spring Boot 3.3 不兼容
+                 （Spring Framework 6.1 调整了 ControllerAdviceBean 的 API，启动会抛 NoSuchMethodError）。
+                 这里把 springdoc 统一固定到与 Spring Boot 3.3.x 匹配的 2.6.0。 -->
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-common</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-mapstruct-binding</artifactId>
+                <version>${lombok-mapstruct-binding.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>${bouncycastle.version}</version>
+            </dependency>
+
+            <!-- ================= 本项目模块 ================= -->
+            <dependency>
+                <groupId>com.ming</groupId>
+                <artifactId>admin-common</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ming</groupId>
+                <artifactId>admin-doc</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ming</groupId>
+                <artifactId>admin-log</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ming</groupId>
+                <artifactId>admin-permission</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ming</groupId>
+                <artifactId>admin-system</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ming</groupId>
+                <artifactId>admin-boot</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- 注解处理器顺序固定为：Lombok -> lombok-mapstruct-binding -> MapStruct -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <release>17</release>
+                        <encoding>UTF-8</encoding>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok-mapstruct-binding</artifactId>
+                                <version>${lombok-mapstruct-binding.version}</version>
+                            </path>
+                            <path>
+                                <groupId>org.mapstruct</groupId>
+                                <artifactId>mapstruct-processor</artifactId>
+                                <version>${mapstruct.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

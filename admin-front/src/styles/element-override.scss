@@ -1,0 +1,295 @@
+/**
+ * Element Plus 主题覆写：把它自己的 CSS 变量映射到我们的主题变量，并统一控件观感。
+ *
+ * 选择器用 :root[data-theme]（特异性高于官方暗色变量的 html.dark），
+ * 这样白 / 黑 / 蓝三套主题下 Element Plus 的观感都跟随我们的变量。
+ * 黑主题另需在 main.ts 引入 element-plus/theme-chalk/dark/css-vars.css（官方暗色基线）。
+ *
+ * 两条约定：
+ *   1. 优先改 CSS 变量，只有变量表达不了的（字重、边框线、菜单项圆角）才写规则；
+ *   2. 所有规则都挂在 :root[data-theme] 下，避免污染没有 data-theme 的页面（如登录页兜底样式）。
+ */
+
+/* ------------------------------------------------------------ 变量映射 */
+:root[data-theme] {
+  /* 主色及其派生档位 */
+  --el-color-primary: var(--admin-color-primary);
+  --el-color-primary-light-3: var(--admin-color-primary-light-3);
+  --el-color-primary-light-5: var(--admin-color-primary-light-5);
+  --el-color-primary-light-7: var(--admin-color-primary-light-7);
+  --el-color-primary-light-8: var(--admin-color-primary-light-8);
+  --el-color-primary-light-9: var(--admin-color-primary-light-9);
+  --el-color-primary-dark-2: var(--admin-color-primary-dark);
+  --el-color-success: var(--admin-color-success);
+  --el-color-warning: var(--admin-color-warning);
+  --el-color-danger: var(--admin-color-danger);
+  --el-color-error: var(--admin-color-danger);
+
+  /* 背景与文字：主/次/三级（三级用于占位与禁用） */
+  --el-bg-color: var(--admin-bg-card);
+  --el-bg-color-page: var(--admin-bg-page);
+  --el-bg-color-overlay: var(--admin-bg-card);
+  --el-text-color-primary: var(--admin-text-primary);
+  --el-text-color-regular: var(--admin-text-primary);
+  --el-text-color-secondary: var(--admin-text-secondary);
+  --el-text-color-placeholder: var(--admin-text-tertiary);
+  --el-text-color-disabled: var(--admin-text-tertiary);
+
+  /* 边框：主边框 + 更浅的分割线，避免 #dcdfe6 那种硬边 */
+  --el-border-color: var(--admin-border-color);
+  --el-border-color-light: var(--admin-border-color);
+  --el-border-color-lighter: var(--admin-divider-color);
+  --el-border-color-extra-light: var(--admin-divider-color);
+  --el-border-color-hover: var(--admin-text-tertiary);
+  --el-fill-color: var(--admin-bg-page);
+  --el-fill-color-light: var(--admin-bg-page);
+  --el-fill-color-lighter: var(--admin-bg-page);
+  --el-fill-color-blank: var(--admin-bg-card);
+  --el-mask-color: rgba(255, 255, 255, 0.72);
+
+  /* 字号与控件尺寸：正文 14px、控件高 32px（与 Ant Design 的 controlHeight 对齐） */
+  --el-font-size-base: 14px;
+  --el-font-size-small: 13px;
+  --el-font-size-extra-small: 12px;
+  --el-font-weight-primary: 500;
+  --el-component-size: 32px;
+  --el-component-size-small: 28px;
+  --el-component-size-large: 36px;
+
+  /* 圆角：控件 6px、小控件 4px、卡片 8px */
+  --el-border-radius-base: var(--admin-radius-md);
+  --el-border-radius-small: var(--admin-radius-sm);
+  --el-border-radius-round: var(--admin-radius-pill);
+
+  /* 阴影：用我们的三档，弹层更收敛 */
+  --el-box-shadow: var(--admin-shadow-popup);
+  --el-box-shadow-light: var(--admin-shadow-card);
+  --el-box-shadow-lighter: var(--admin-shadow-card);
+  --el-box-shadow-dark: var(--admin-shadow-popup);
+
+  /* 表格 */
+  --el-table-border-color: var(--admin-divider-color);
+  --el-table-header-bg-color: var(--admin-bg-page);
+  --el-table-header-text-color: var(--admin-text-secondary);
+  --el-table-text-color: var(--admin-text-primary);
+  --el-table-row-hover-bg-color: var(--admin-bg-hover);
+  --el-table-bg-color: var(--admin-bg-card);
+  --el-table-tr-bg-color: var(--admin-bg-card);
+
+  /* 侧边栏菜单 */
+  --el-menu-bg-color: var(--admin-bg-sidebar);
+  --el-menu-text-color: var(--admin-text-sidebar);
+  --el-menu-active-color: var(--admin-text-sidebar-active);
+  --el-menu-hover-bg-color: var(--admin-bg-sidebar-active);
+  --el-menu-item-height: 42px;
+  --el-menu-sub-item-height: 38px;
+}
+
+/* 黑主题下遮罩需要更深 */
+:root[data-theme='dark'] {
+  --el-mask-color: rgba(0, 0, 0, 0.72);
+}
+
+/* --------------------------------------------- 按钮：统一字重、圆角与过渡 */
+:root[data-theme] .el-button {
+  font-weight: 500;
+  border-radius: var(--admin-radius-md);
+  transition:
+    background-color var(--admin-transition),
+    border-color var(--admin-transition),
+    color var(--admin-transition);
+}
+
+:root[data-theme] .el-button--small {
+  border-radius: var(--admin-radius-sm);
+}
+
+/* 表格行内的文字按钮（编辑/删除等）不需要额外内边距与圆角，保持紧凑 */
+:root[data-theme] .el-button.is-link {
+  font-weight: 500;
+  height: auto;
+  padding: 0;
+}
+
+/* ------------------------------------------- 输入类控件：柔和的边框与聚焦 */
+:root[data-theme] .el-input__wrapper,
+:root[data-theme] .el-textarea__inner,
+:root[data-theme] .el-select__wrapper,
+:root[data-theme] .el-input-number .el-input__wrapper {
+  border-radius: var(--admin-radius-md);
+  box-shadow: 0 0 0 1px var(--admin-border-color) inset;
+  transition: box-shadow var(--admin-transition);
+}
+
+:root[data-theme] .el-input__wrapper:hover,
+:root[data-theme] .el-textarea__inner:hover,
+:root[data-theme] .el-select__wrapper:hover {
+  box-shadow: 0 0 0 1px var(--admin-text-tertiary) inset;
+}
+
+:root[data-theme] .el-input__wrapper.is-focus,
+:root[data-theme] .el-textarea__inner:focus,
+:root[data-theme] .el-select__wrapper.is-focused {
+  box-shadow: 0 0 0 1px var(--admin-color-primary) inset;
+}
+
+/* 表单标签用次一级字色，减少整屏纯黑字的压迫感 */
+:root[data-theme] .el-form-item__label {
+  color: var(--admin-text-secondary);
+  font-weight: 400;
+}
+
+/* ------------------------------------------------------ 表格：表头与行高 */
+:root[data-theme] .el-table th.el-table__cell {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--admin-text-secondary);
+  background-color: var(--admin-bg-page);
+}
+
+:root[data-theme] .el-table td.el-table__cell,
+:root[data-theme] .el-table th.el-table__cell {
+  padding: 8px 0;
+}
+
+:root[data-theme] .el-table .cell {
+  line-height: 22px;
+}
+
+/*
+ * 操作列（列定义里传 cellClassName: 'cell-actions'）：
+ * 按钮平铺排列，一行放不下就换行——不用 nowrap 裁掉按钮，也不必为了塞下按钮把列撑宽、
+ * 进而把整张表顶出横向滚动条。换行间距统一交给 gap，因此要抵消 Element Plus 默认的 12px 左外边距。
+ */
+:root[data-theme] .el-table .cell-actions .cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px 8px;
+}
+
+:root[data-theme] .el-table .cell-actions .el-button + .el-button {
+  margin-left: 0;
+}
+
+/*
+ * 树形表格：Element Plus 会在第一列的单元格里额外插入「缩进 + 展开图标」两个元素
+ * （缩进是 span，展开图标是 div），展开图标只靠 [class*=el-table__row--level] 这条选择器
+ * 被压成行内块。这里再显式兜一层，任一环节失效都会让它们另起一行、把行高顶成两行。
+ */
+:root[data-theme] .el-table .el-table__expand-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+:root[data-theme] .el-table .el-table__indent {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* 表头第一个/最后一个单元格跟随卡片圆角，避免直角戳出圆角卡片 */
+:root[data-theme] .el-table th.el-table__cell:first-child {
+  border-top-left-radius: var(--admin-radius-sm);
+}
+
+:root[data-theme] .el-table th.el-table__cell:last-child {
+  border-top-right-radius: var(--admin-radius-sm);
+}
+
+/* 表格内的标签与开关也跟随统一圆角 */
+:root[data-theme] .el-tag {
+  border-radius: var(--admin-radius-sm);
+  font-weight: 500;
+}
+
+/* ----------------------------------------------------- 分页：字号与圆角 */
+:root[data-theme] .el-pagination {
+  font-size: 13px;
+  --el-pagination-button-height: 30px;
+  --el-pagination-button-width: 30px;
+}
+
+:root[data-theme] .el-pagination.is-background .el-pager li,
+:root[data-theme] .el-pagination.is-background .btn-prev,
+:root[data-theme] .el-pagination.is-background .btn-next {
+  border-radius: var(--admin-radius-sm);
+}
+
+/* --------------------------------------------- 弹层：圆角、阴影与内边距 */
+:root[data-theme] .el-dialog,
+:root[data-theme] .el-drawer {
+  border-radius: var(--admin-radius-card);
+  box-shadow: var(--admin-shadow-popup);
+}
+
+:root[data-theme] .el-dialog__header {
+  margin-right: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--admin-divider-color);
+}
+
+:root[data-theme] .el-dialog__title,
+:root[data-theme] .el-drawer__title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+:root[data-theme] .el-dialog__footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--admin-divider-color);
+}
+
+:root[data-theme] .el-popper,
+:root[data-theme] .el-dropdown__popper,
+:root[data-theme] .el-select__popper {
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-popup);
+}
+
+:root[data-theme] .el-message,
+:root[data-theme] .el-message-box {
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-popup);
+}
+
+/* -------------------------------------------------- 提示条与卡片类容器 */
+:root[data-theme] .el-alert {
+  border-radius: var(--admin-radius-md);
+}
+
+:root[data-theme] .el-card {
+  border-color: var(--admin-border-color);
+  border-radius: var(--admin-radius-card);
+  box-shadow: var(--admin-shadow-card);
+}
+
+/* ------------------------------------------------ 侧边栏菜单项：圆角块 */
+:root[data-theme] .sidebar__menu .el-menu-item,
+:root[data-theme] .sidebar__menu .el-sub-menu__title {
+  height: 42px;
+  line-height: 42px;
+  margin: 2px 8px;
+  border-radius: var(--admin-radius-md);
+  transition:
+    background-color var(--admin-transition),
+    color var(--admin-transition);
+}
+
+/* 选中的父级菜单只做字色强调，不再整块高亮，避免和子项抢注意力 */
+:root[data-theme] .sidebar__menu .el-sub-menu.is-active > .el-sub-menu__title {
+  color: var(--admin-text-sidebar-active);
+}
+
+/* 蓝主题的深色侧边栏里，子菜单弹出层也要保持深底 */
+:root[data-theme='blue'] .el-menu--popup,
+:root[data-theme='blue'] .el-menu--popup-container {
+  background: var(--admin-bg-sidebar);
+}
+
+/* Element Plus 默认按钮与输入框的字体继承全局设置 */
+:root[data-theme] .el-button,
+:root[data-theme] .el-input__inner,
+:root[data-theme] .el-textarea__inner {
+  font-family: inherit;
+}

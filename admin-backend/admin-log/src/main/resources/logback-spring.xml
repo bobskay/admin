@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  logback 配置（Spring Boot 加载 logback-spring.xml 时才支持 springProfile / springProperty）。
+
+  通用格式：时间、级别、线程、traceId、类名、消息；控制台按级别着色（仅控制台，文件里不带颜色码）。
+  traceId 由 admin-permission 的 traceId 过滤器写入 MDC（键名 traceId），请求结束清理，这里直接读取 %X{traceId}。
+
+  环境差异：
+    dev  —— 只输出控制台；业务包 com.ming.admin 打 DEBUG，便于本地排查。
+    prod —— 异步输出到文件：按天 + 按大小滚动，保留 30 天，单文件上限 100MB，ERROR 单独一个文件；
+            控制台只输出 WARN 以上，减少生产环境的 IO 与磁盘占用。
+
+  日志目录取配置项 admin.log-dir，默认 logs（相对应用工作目录）。
+  默认激活的 profile 是 dev（见 application.yml 的 spring.profiles.active），因此两个分支不会同时生效。
+-->
+<configuration scan="false">
+
+    <!-- 日志目录：与 AdminProperties.logDir 读的是同一个配置项 -->
+    <springProperty scope="context" name="LOG_DIR" source="admin.log-dir" defaultValue="logs"/>
+
+    <!-- 控制台格式：带颜色（按级别着色），含 traceId；无 traceId 时该段为空 -->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %magenta([%thread]) [%X{traceId}] %cyan(%logger{40}) - %msg%n"/>
+
+    <!-- 文件格式：不带颜色码，含 traceId -->
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%X{traceId}] %logger{40} - %msg%n"/>
+
+    <!-- ================= dev：只输出控制台，业务包 DEBUG ================= -->
+    <springProfile name="dev">
+        <appender name="DEV_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+
+        <!-- 业务包 DEBUG：SQL 日志由 application-dev.yml 的 mybatis-plus log-impl 打开 -->
+        <logger name="com.ming.admin" level="DEBUG"/>
+
+        <root level="INFO">
+            <appender-ref ref="DEV_CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- ================= prod：异步文件（按天 + 按大小滚动）+ 控制台只 WARN 以上 =================
+         条件写 prod | !dev：dev 分支与分支互斥，任何 profile 组合下都有且只有一套日志配置生效
+         （prod 生效；未激活任何 profile 或激活其他 profile 时按生产档处理，避免出现"无 appender"导致日志全丢）。 -->
+    <springProfile name="prod | !dev">
+        <!-- 控制台只保留 WARN 以上 -->
+        <appender name="PROD_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>WARN</level>
+            </filter>
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+
+        <!-- 全量日志文件：按天 + 按大小滚动，保留 30 天，单文件上限 100MB -->
+        <appender name="PROD_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_DIR}/admin.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/admin.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>100MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+                <totalSizeCap>10GB</totalSizeCap>
+                <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+
+        <!-- 错误日志文件：只收 ERROR -->
+        <appender name="PROD_ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_DIR}/admin-error.log</file>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>ERROR</level>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/admin-error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+                <maxFileSize>100MB</maxFileSize>
+                <maxHistory>30</maxHistory>
+                <totalSizeCap>10GB</totalSizeCap>
+                <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
+                <charset>UTF-8</charset>
+            </encoder>
+        </appender>
+
+        <!-- 异步包装：日志写入不阻塞业务线程；队列满时 discardingThreshold=0 表示不丢日志、由 AsyncAppender 阻塞等待 -->
+        <appender name="ASYNC_PROD_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>1024</queueSize>
+            <discardingThreshold>0</discardingThreshold>
+            <neverBlock>false</neverBlock>
+            <includeCallerData>false</includeCallerData>
+            <appender-ref ref="PROD_FILE"/>
+        </appender>
+
+        <appender name="ASYNC_PROD_ERROR_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>512</queueSize>
+            <discardingThreshold>0</discardingThreshold>
+            <neverBlock>false</neverBlock>
+            <includeCallerData>false</includeCallerData>
+            <appender-ref ref="PROD_ERROR_FILE"/>
+        </appender>
+
+        <!-- 生产环境业务包只记 INFO 及以上，SQL 日志由 application-prod.yml 关闭 -->
+        <logger name="com.ming.admin" level="INFO"/>
+
+        <root level="INFO">
+            <appender-ref ref="PROD_CONSOLE"/>
+            <appender-ref ref="ASYNC_PROD_FILE"/>
+            <appender-ref ref="ASYNC_PROD_ERROR_FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

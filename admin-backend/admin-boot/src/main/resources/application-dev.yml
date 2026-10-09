@@ -1,0 +1,31 @@
+# =============================================================================
+# 开发环境配置
+# =============================================================================
+
+spring:
+  data:
+    redis:
+      # 开发库序号：与生产（1 号库）隔离，避免清缓存误删线上 token
+      database: 0
+
+mybatis-plus:
+  configuration:
+    # 开发环境打印 SQL
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+admin:
+  # 开发环境开启启动扫描校验与接口文档
+  startup-check-enabled: true
+  doc-enabled: true
+
+knife4j:
+  # 开启 knife4j 增强，文档访问入口为 /doc.html
+  enable: true
+  setting:
+    language: zh_cn
+
+logging:
+  level:
+    root: info
+    # 业务包 DEBUG，日志格式与输出目标见 admin-log 的 logback-spring.xml
+    com.ming.admin: debug

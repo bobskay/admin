@@ -1,0 +1,146 @@
+/**
+ * 三套主题的 CSS 变量（任务书 20 章）。
+ *
+ * 选择器用 :root[data-theme='...']（特异性 0,2,0），比 Element Plus 暗色变量文件的 html.dark（0,1,1）更高，
+ * 保证黑主题下我们的变量不被官方暗色变量覆盖。
+ *
+ * 三层结构：
+ *   1. 颜色（随主题变化）：主色梯度、成功/警告/危险、背景、文字、边框、分割线；
+ *   2. 圆角与阴影（跨主题一致的小尺寸，深色主题单独加深阴影）；
+ *   3. 交互态底色（hover / 选中），用低透明度叠色而不是实色，深浅主题都能自然融合。
+ *
+ * 配色基准：主色取 Ant Design 5 的 brand blue（#1677ff）梯度，中性色取"文字三级 + 边框两级"的克制灰阶，
+ * 目标是去掉 Element UI 时代 #409eff 塑料蓝与 #dcdfe6 硬边框带来的廉价感。
+ */
+
+/* ------------------------------------------------------------------ 尺寸 */
+/* 圆角与阴影不随主题变化，dark 主题在下面单独覆盖阴影 */
+:root {
+  /* 圆角：控件 6px、小控件 4px、卡片 8px（8px 是现代后台卡片的主流取值） */
+  --admin-radius-sm: 4px;
+  --admin-radius-md: 6px;
+  --admin-radius-lg: 8px;
+  --admin-radius-card: 8px;
+  --admin-radius-pill: 999px;
+
+  /* 阴影：卡片只用"贴地"极轻阴影做出层次，不用重投影 */
+  --admin-shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.03);
+  --admin-shadow-raised: 0 2px 4px -1px rgba(16, 24, 40, 0.05), 0 4px 12px -2px rgba(16, 24, 40, 0.06);
+  --admin-shadow-popup: 0 12px 32px -8px rgba(16, 24, 40, 0.14), 0 4px 8px -4px rgba(16, 24, 40, 0.06);
+
+  /* 交互动效统一时长，避免各组件各自为政 */
+  --admin-transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ------------------------------------------------- 兜底（JS 尚未设主题时） */
+:root {
+  --admin-color-primary: #1677ff;
+  --admin-color-primary-light-3: #4096ff;
+  --admin-color-primary-light-5: #69b1ff;
+  --admin-color-primary-light-7: #91caff;
+  --admin-color-primary-light-8: #bae0ff;
+  --admin-color-primary-light-9: #e6f4ff;
+  --admin-color-primary-dark: #0958d9;
+  --admin-color-success: #16a34a;
+  --admin-color-warning: #d97706;
+  --admin-color-danger: #dc2626;
+  --admin-bg-page: #f5f7fa;
+  --admin-bg-card: #ffffff;
+  --admin-bg-sidebar: #ffffff;
+  --admin-bg-navbar: #ffffff;
+  --admin-bg-hover: rgba(16, 24, 40, 0.04);
+  --admin-text-primary: #1f2329;
+  --admin-text-secondary: #646a73;
+  --admin-text-tertiary: #8f959e;
+  --admin-text-sidebar: #1f2329;
+  --admin-text-sidebar-active: #1677ff;
+  --admin-bg-sidebar-active: #e6f4ff;
+  --admin-border-color: #e5e6eb;
+  --admin-divider-color: #f0f1f3;
+}
+
+/* ------------------------- 白主题：浅灰底、白卡片、白侧边栏（默认主题） */
+:root[data-theme='light'] {
+  --admin-color-primary: #1677ff;
+  --admin-color-primary-light-3: #4096ff;
+  --admin-color-primary-light-5: #69b1ff;
+  --admin-color-primary-light-7: #91caff;
+  --admin-color-primary-light-8: #bae0ff;
+  --admin-color-primary-light-9: #e6f4ff;
+  --admin-color-primary-dark: #0958d9;
+  --admin-color-success: #16a34a;
+  --admin-color-warning: #d97706;
+  --admin-color-danger: #dc2626;
+  --admin-bg-page: #f5f7fa;
+  --admin-bg-card: #ffffff;
+  --admin-bg-sidebar: #ffffff;
+  --admin-bg-navbar: #ffffff;
+  --admin-bg-hover: rgba(16, 24, 40, 0.04);
+  --admin-text-primary: #1f2329;
+  --admin-text-secondary: #646a73;
+  --admin-text-tertiary: #8f959e;
+  --admin-text-sidebar: #1f2329;
+  --admin-text-sidebar-active: #1677ff;
+  --admin-bg-sidebar-active: #e6f4ff;
+  --admin-border-color: #e5e6eb;
+  --admin-divider-color: #f0f1f3;
+}
+
+/* --------- 黑主题：中性深灰底（不用纯黑，避免 OLED 上的生硬对比） */
+:root[data-theme='dark'] {
+  --admin-color-primary: #4096ff;
+  --admin-color-primary-light-3: #1668dc;
+  --admin-color-primary-light-5: #15417e;
+  --admin-color-primary-light-7: #112a45;
+  --admin-color-primary-light-8: #111d2c;
+  --admin-color-primary-light-9: #111a2c;
+  --admin-color-primary-dark: #69b1ff;
+  --admin-color-success: #4ade80;
+  --admin-color-warning: #fbbf24;
+  --admin-color-danger: #f87171;
+  --admin-bg-page: #0f1115;
+  --admin-bg-card: #17181c;
+  --admin-bg-sidebar: #17181c;
+  --admin-bg-navbar: #17181c;
+  --admin-bg-hover: rgba(255, 255, 255, 0.06);
+  --admin-text-primary: #e6e8eb;
+  --admin-text-secondary: #9ba1a9;
+  --admin-text-tertiary: #6f757d;
+  --admin-text-sidebar: #c9cdd4;
+  --admin-text-sidebar-active: #4096ff;
+  --admin-bg-sidebar-active: #111a2c;
+  --admin-border-color: #2b2f36;
+  --admin-divider-color: #232629;
+
+  /* 深色背景需要更重的阴影才有层次 */
+  --admin-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --admin-shadow-raised: 0 2px 4px -1px rgba(0, 0, 0, 0.5), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+  --admin-shadow-popup: 0 12px 32px -8px rgba(0, 0, 0, 0.6), 0 4px 8px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* ------------- 蓝主题：深蓝侧边栏（商务感）、浅色内容区、同一套主色梯度 */
+:root[data-theme='blue'] {
+  --admin-color-primary: #1677ff;
+  --admin-color-primary-light-3: #4096ff;
+  --admin-color-primary-light-5: #69b1ff;
+  --admin-color-primary-light-7: #91caff;
+  --admin-color-primary-light-8: #bae0ff;
+  --admin-color-primary-light-9: #e6f4ff;
+  --admin-color-primary-dark: #0958d9;
+  --admin-color-success: #16a34a;
+  --admin-color-warning: #d97706;
+  --admin-color-danger: #dc2626;
+  --admin-bg-page: #f5f7fa;
+  --admin-bg-card: #ffffff;
+  --admin-bg-sidebar: #0d2137;
+  --admin-bg-navbar: #ffffff;
+  --admin-bg-hover: rgba(16, 24, 40, 0.04);
+  --admin-text-primary: #1f2329;
+  --admin-text-secondary: #646a73;
+  --admin-text-tertiary: #8f959e;
+  --admin-text-sidebar: #c3d0e0;
+  --admin-text-sidebar-active: #ffffff;
+  --admin-bg-sidebar-active: #1677ff;
+  --admin-border-color: #e5e6eb;
+  --admin-divider-color: #f0f1f3;
+}

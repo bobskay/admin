@@ -1,0 +1,10 @@
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  vue-demi: true
+# pnpm 工作区配置。
+#
+# 本工程是单包工程（非 monorepo），这个文件只用来承载 pnpm 的安装设置：
+# pnpm 10 起把依赖的构建脚本（postinstall 等）默认视为不可信并拒绝执行，
+# pnpm 12 起又不再读取 package.json 里的 pnpm 字段，因此放行清单必须写在这里，
+# 否则 `pnpm install` 会以 ERR_PNPM_IGNORED_BUILDS 非零退出。

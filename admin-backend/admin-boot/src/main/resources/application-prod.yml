@@ -1,0 +1,40 @@
+# =============================================================================
+# 生产环境配置
+# =============================================================================
+
+spring:
+  datasource:
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 50
+  data:
+    redis:
+      # 生产库序号：与开发（0 号库）隔离
+      database: 1
+
+mybatis-plus:
+  configuration:
+    # 生产环境关闭 SQL 日志
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+admin:
+  # 生产环境关闭启动扫描校验（清单收集仍会执行，接口依赖它）与接口文档
+  startup-check-enabled: false
+  doc-enabled: false
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+knife4j:
+  # 生产环境彻底关闭文档资源
+  enable: false
+  production: true
+
+logging:
+  level:
+    root: info
+    # 生产环境业务包只记 INFO 及以上，日志输出到文件（见 logback-spring.xml 的 prod 分支）
+    com.ming.admin: info

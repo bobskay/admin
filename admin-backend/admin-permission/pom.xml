@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.ming</groupId>
+        <artifactId>admin-dependence</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../admin-dependence/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>admin-permission</artifactId>
+    <packaging>jar</packaging>
+    <name>admin-permission</name>
+    <description>统一返回、状态码、异常、分页、traceId、认证、鉴权、线程上下文、缓存服务、全局配置</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.ming</groupId>
+            <artifactId>admin-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.ming</groupId>
+            <artifactId>admin-doc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
